@@ -1,0 +1,8 @@
+SteamUpload/content/*
+
+!SteamUpload/content/put your game here.txt
+
+SteamUpload/builder/*
+!SteamUpload/content/put steamcmd.exe here.txt
+
+SteamUpload/output/
