@@ -1,6 +1,6 @@
 SteamUpload/content/*
 
-!SteamUpload/content/put your game here.txt
+!SteamUpload/content/game content will go here automatically.txt
 
 SteamUpload/builder/*
 !SteamUpload/content/put steamcmd.exe here.txt
