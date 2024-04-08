@@ -70,19 +70,20 @@ function SteamUpload {
     if (!($SteamBranch))
     {
         Write-Host "-SteamBranch must be specified when using -SteamUpload" -ForegroundColor Red
-        return;
+        return
     }
 
     if (!($SteamUsername))
     {
         Write-Host "-SteamUsername must be specified when using -SteamUpload, also the STEAM_PASSWORD environment variable must be set" -ForegroundColor Red
-        return;
+        return
     }
     
     if (!(Test-Path -Path ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe))
     {
         Write-Host "steamcmd was not found at ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe" -ForegroundColor Red
         Write-Host "Download steamcmd from https://partner.steamgames.com/ and place it in ${PSScriptRoot}\SteamUpload" -ForegroundColor Yellow
+        return
     }
 
     cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" -ScriptsForProject="$UProjectPath" Turnkey -command=VerifySdk -platform=Win64 -UpdateIfNeeded -project=$UProjectPath BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target=$GameTarget -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig=$Configuration"
@@ -107,7 +108,7 @@ function Get-UProjectPath {
         if(!(Test-Path -Path $Project))
         {
             Write-Error "Cannot find $Project"
-            return;
+            return
         }
     
         return (Get-ChildItem -Path $Project)
@@ -119,14 +120,14 @@ function Get-UProjectPath {
         if ($UProjectFiles.Count -gt 1 -and !$Project)
         {
             Write-Host "Multiple uproject files found, please specify which file to use with -Project" -ForegroundColor Red
-            return;
+            return
         }
 
         if ($UProjectFiles.Count -eq 0 -and !$Project)
         {
             $UProjectSearchLocation = Get-Item $PSScriptRoot/../
             Write-Host "No uproject files found in $UProjectSearchLocation, either move your Scripts directory or specify which file to use with -Project" -ForegroundColor Red
-            return;
+            return
         }
 
         return $UProjectFiles[0]
@@ -139,7 +140,7 @@ function Get-EnginePath {
     if (-Not $UProjectFile.EngineAssociation)
     {
         Write-Error "Engine association in UProject file is empty, no idea where to find the engine or what version we are using"
-        return;
+        return
     }
 
     $UnrealFolder = ""
@@ -276,13 +277,13 @@ Write-Separator
 if ($Help)
 {
     Get-Help -Detailed $PSScriptRoot/build.ps1
-    return;
+    return
 }
 
 $UProjectPath = (Get-UProjectPath).FullName
 if (!$UProjectPath)
 {
-    return;
+    return
 }
 
 if (!($GameTarget))
@@ -298,7 +299,7 @@ if (!($EditorTarget))
 if ($Troubleshoot)
 {
     Troubleshoot
-    return;
+    return
 }
 
 $UnrealFolder = Get-EnginePath
