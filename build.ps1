@@ -236,7 +236,7 @@ function Troubleshoot {
 }
 
 function Build-Editor {
-    cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -nop4 -utf8output -project=$UProjectPath -target=$EditorTarget -platform=Win64 -configuration=$Configuration"
+    cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -nop4 -utf8output -project=$UProjectPath -target=$EditorTarget -platform=Win64 -configuration=$Configuration -notools"
 }
 
 function Write-Separator {
