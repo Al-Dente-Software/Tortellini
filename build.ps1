@@ -86,7 +86,7 @@ function SteamUpload {
         return
     }
 
-    cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" -ScriptsForProject="$UProjectPath" Turnkey -command=VerifySdk -platform=Win64 -UpdateIfNeeded -project=$UProjectPath BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target=$GameTarget -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig=$Configuration"
+    cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target=$GameTarget -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig=$Configuration"
     if ($LASTEXITCODE -eq 0) {
         robocopy "${PSScriptRoot}\..\Binaries\Windows" "${PSScriptRoot}\SteamUpload\content" /MIR
         Write-Host "Uploading to $SteamBranch"
