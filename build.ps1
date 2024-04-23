@@ -63,7 +63,7 @@ function GenerateClangDatabase {
 }
 
 function CleanBuild {
-    cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -NoPCH -NoSharedPCH -nop4 -utf8output -project=$UProjectPath -target=$EditorTarget -platform=Win64 -configuration=$Configuration -Clean"
+    cmd.exe /c "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -NoPCH -NoSharedPCH -nop4 -utf8output -project="$UProjectPath" -target="$EditorTarget" -platform=Win64 -configuration="$Configuration" -Clean
 }
 
 function SteamUpload {
@@ -79,23 +79,34 @@ function SteamUpload {
         return
     }
     
-    if (!(Test-Path -Path ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe))
+    
+    if ((Test-Path -Path ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe))
     {
-        Write-Host "steamcmd was not found at ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe" -ForegroundColor Red
-        Write-Host "Download steamcmd from https://partner.steamgames.com/ and place it in ${PSScriptRoot}\SteamUpload" -ForegroundColor Yellow
+        Write-Host "Using steamcmd.exe from ${PSScriptRoot}\SteamUpload\builder"
+        $SteamCMD = Get-Item ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe
+    } 
+    elseif (Get-Command "steamcmd.exe" -ErrorAction SilentlyContinue)
+    {
+        Write-Host "Using steamcmd.exe from PATH"
+        $SteamCMD = Get-Command steamcmd.exe
+    }
+    else 
+    {
+        Write-Host "steamcmd was not found at ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe nor found on PATH" -ForegroundColor Red
+        Write-Host "Download steamcmd from https://partner.steamgames.com/ and place it in ${PSScriptRoot}\SteamUpload. Or add it to your PATH variable" -ForegroundColor Yellow
         return
     }
 
-    cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target=$GameTarget -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig=$Configuration"
+    cmd.exe /c "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target="$GameTarget" -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig="$Configuration"
     if ($LASTEXITCODE -eq 0) {
         robocopy "${PSScriptRoot}\..\Binaries\Windows" "${PSScriptRoot}\SteamUpload\content" /MIR
         Write-Host "Uploading to $SteamBranch"
-        & ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe +login $SteamUsername $env:STEAM_PASSWORD +run_app_build "${PSScriptRoot}\SteamUpload\${SteamBranch}.vdf" +quit
+        & $SteamCMD +login $SteamUsername $env:STEAM_PASSWORD +run_app_build "${PSScriptRoot}\SteamUpload\${SteamBranch}.vdf" +quit
     }
 }
 
 function LocalGameBuild {
-    cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" -ScriptsForProject="$UProjectPath" Turnkey -command=VerifySdk -platform=Win64 -UpdateIfNeeded -project=$UProjectPath BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target=$GameTarget -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig=$Configuration"
+    cmd.exe /c "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" -ScriptsForProject="$UProjectPath" Turnkey -command=VerifySdk -platform=Win64 -UpdateIfNeeded -project="$UProjectPath" BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target="$GameTarget" -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig="$Configuration"
     if ($LASTEXITCODE -eq 0) {
         explorer "${PSScriptRoot}\..\Binaries\Windows"
     }
@@ -214,10 +225,11 @@ function Troubleshoot {
 
     Write-Separator
     Write-Host "Checking for steamcmd, which is required to use the -SteamUpload flag"
-    if (!(Test-Path -Path ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe))
+    
+    if (!(Test-Path -Path ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe) -and !(Get-Command "steamcmd.exe" -ErrorAction SilentlyContinue))
     {
-        Write-Host "steamcmd was not found at ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe" -ForegroundColor Red
-        Write-Host "Download steamcmd from https://partner.steamgames.com/ and place it in ${PSScriptRoot}\SteamUpload" -ForegroundColor Red
+        Write-Host "steamcmd was not found at ${PSScriptRoot}\SteamUpload\builder\steamcmd.exe nor found on PATH" -ForegroundColor Red 
+        Write-Host "Download steamcmd from https://partner.steamgames.com/ and place it in ${PSScriptRoot}\SteamUpload. Or add it to your PATH variable" -ForegroundColor Red
     }
     else 
     {
@@ -237,7 +249,7 @@ function Troubleshoot {
 }
 
 function Build-Editor {
-    cmd.exe /c ""${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -nop4 -utf8output -project=$UProjectPath -target=$EditorTarget -platform=Win64 -configuration=$Configuration -notools"
+    cmd.exe /c "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -nop4 -utf8output -project="$UProjectPath" -target="$EditorTarget" -platform=Win64 -configuration="$Configuration" -notools
 }
 
 function Write-Separator {
