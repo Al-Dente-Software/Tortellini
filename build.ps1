@@ -59,11 +59,11 @@ function Test-IsGuid
 }
 
 function GenerateClangDatabase {
-    cmd.exe /c "${UnrealFolder}\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.exe" -mode=GenerateClangDatabase -project="${UProjectPath}" -OutputDir="$PSScriptRoot/../" $EditorTarget $Configuration Win64
+    & "${UnrealFolder}\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.exe" -mode=GenerateClangDatabase -project="${UProjectPath}" -OutputDir="$PSScriptRoot/../" $EditorTarget $Configuration Win64
 }
 
 function CleanBuild {
-    cmd.exe /c "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -NoPCH -NoSharedPCH -nop4 -utf8output -project="$UProjectPath" -target="$EditorTarget" -platform=Win64 -configuration="$Configuration" -Clean
+    & "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -NoPCH -NoSharedPCH -nop4 -utf8output -project="$UProjectPath" -target="$EditorTarget" -platform=Win64 -configuration="$Configuration" -Clean
 }
 
 function SteamUpload {
@@ -97,7 +97,7 @@ function SteamUpload {
         return
     }
 
-    cmd.exe /c "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target="$GameTarget" -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig="$Configuration"
+    & "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target="$GameTarget" -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig="$Configuration"
     if ($LASTEXITCODE -eq 0) {
         robocopy "${PSScriptRoot}\..\Binaries\Windows" "${PSScriptRoot}\SteamUpload\content" /MIR
         Write-Host "Uploading to $SteamBranch"
@@ -106,7 +106,7 @@ function SteamUpload {
 }
 
 function LocalGameBuild {
-    cmd.exe /c "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" -ScriptsForProject="$UProjectPath" Turnkey -command=VerifySdk -platform=Win64 -UpdateIfNeeded -project="$UProjectPath" BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target="$GameTarget" -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig="$Configuration"
+    & "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" -ScriptsForProject="$UProjectPath" Turnkey -command=VerifySdk -platform=Win64 -UpdateIfNeeded -project="$UProjectPath" BuildCookRun -NoPCH -NoSharedPCH -DisableUnity -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook -project="$UProjectPath" -target="$GameTarget" -platform=Win64 -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory="${PSScriptRoot}\..\Binaries" -clientconfig="$Configuration"
     if ($LASTEXITCODE -eq 0) {
         explorer "${PSScriptRoot}\..\Binaries\Windows"
     }
@@ -249,7 +249,7 @@ function Troubleshoot {
 }
 
 function Build-Editor {
-    cmd.exe /c "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -nop4 -utf8output -project="$UProjectPath" -target="$EditorTarget" -platform=Win64 -configuration="$Configuration" -notools
+    & "${UnrealFolder}/Engine/Build/BatchFiles/RunUAT.bat" BuildTarget -nop4 -utf8output -project="$UProjectPath" -target="$EditorTarget" -platform=Win64 -configuration="$Configuration" -notools
 }
 
 function Write-Separator {
