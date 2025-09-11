@@ -101,7 +101,7 @@ function SteamUpload {
     if ($LASTEXITCODE -eq 0) {
         robocopy "${PSScriptRoot}\..\Binaries\Windows" "${PSScriptRoot}\SteamUpload\content" /MIR
         Write-Host "Uploading to $SteamBranch"
-        & $SteamCMD +login $SteamUsername $env:STEAM_PASSWORD +run_app_build "${PSScriptRoot}\SteamUpload\${SteamBranch}.vdf" +quit
+        & "$SteamCMD" +login $SteamUsername $env:STEAM_PASSWORD +run_app_build "${PSScriptRoot}\SteamUpload\${SteamBranch}.vdf" +quit
     }
 }
 
